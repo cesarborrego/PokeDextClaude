@@ -22,5 +22,5 @@ data class PokemonDetail(
     val weight: Int,
     val stats: List<PokemonStat>,
     val abilities: List<String>,
-    val description: String
+    val description: String,
 )

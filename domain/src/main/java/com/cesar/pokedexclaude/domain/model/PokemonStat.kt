@@ -8,5 +8,5 @@ package com.cesar.pokedexclaude.domain.model
  */
 data class PokemonStat(
     val name: String,
-    val baseStat: Int
+    val baseStat: Int,
 )

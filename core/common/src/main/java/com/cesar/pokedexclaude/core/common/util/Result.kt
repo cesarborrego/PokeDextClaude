@@ -14,7 +14,9 @@ sealed interface Result<out T> {
      *
      * @param data The successful result data
      */
-    data class Success<T>(val data: T) : Result<T>
+    data class Success<T>(
+        val data: T,
+    ) : Result<T>
 
     /**
      * Represents a failed operation with an associated error.
@@ -24,7 +26,7 @@ sealed interface Result<out T> {
      */
     data class Error(
         val exception: Throwable,
-        val message: String? = exception.message
+        val message: String? = exception.message,
     ) : Result<Nothing>
 
     /**
@@ -51,18 +53,20 @@ fun <T> Result<T>.isLoading(): Boolean = this is Result.Loading
 /**
  * Extension function to get data from a successful result, or null if not successful.
  */
-fun <T> Result<T>.getOrNull(): T? = when (this) {
-    is Result.Success -> data
-    else -> null
-}
+fun <T> Result<T>.getOrNull(): T? =
+    when (this) {
+        is Result.Success -> data
+        else -> null
+    }
 
 /**
  * Extension function to get data from a successful result, or a default value if not successful.
  */
-fun <T> Result<T>.getOrDefault(defaultValue: T): T = when (this) {
-    is Result.Success -> data
-    else -> defaultValue
-}
+fun <T> Result<T>.getOrDefault(defaultValue: T): T =
+    when (this) {
+        is Result.Success -> data
+        else -> defaultValue
+    }
 
 /**
  * Extension function to execute a block on successful result.

@@ -34,9 +34,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cesar.pokedexclaude.ui.common.ErrorView
-import org.koin.androidx.compose.koinViewModel
 import com.cesar.pokedexclaude.ui.common.LoadingView
 import com.cesar.pokedexclaude.ui.screens.list.components.PokemonListItem
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Main Pokémon list screen displaying a scrollable list of Pokémon.
@@ -52,7 +52,7 @@ import com.cesar.pokedexclaude.ui.screens.list.components.PokemonListItem
 fun PokemonListScreen(
     onPokemonClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PokemonListMviViewModel = koinViewModel()
+    viewModel: PokemonListMviViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -64,12 +64,12 @@ fun PokemonListScreen(
                 title = {
                     Text(
                         text = "Pokédex",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
             )
-        }
+        },
     ) { paddingValues ->
         // Exhaustive when expression with sealed class - compiler verifies all cases are handled
         when (val currentState = state) {
@@ -83,16 +83,17 @@ fun PokemonListScreen(
                     message = currentState.message,
                     onRetry = {
                         viewModel.processIntent(PokemonListIntent.Retry)
-                    }
+                    },
                 )
             }
 
             is PokemonListUiState.Success -> {
                 // No !! operator - all data guaranteed non-null in Success state
                 Column(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
+                    modifier =
+                        Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize(),
                 ) {
                     // Search bar - state guaranteed to be Success
                     SearchBar(
@@ -100,9 +101,10 @@ fun PokemonListScreen(
                         onSearchQueryChange = { query ->
                             viewModel.processIntent(PokemonListIntent.SearchQueryChanged(query))
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
                     )
 
                     PokemonList(
@@ -112,7 +114,7 @@ fun PokemonListScreen(
                             viewModel.processIntent(PokemonListIntent.LoadMore)
                         },
                         isLoadingMore = currentState.isLoadingMore,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                 }
             }
@@ -131,14 +133,17 @@ private fun PokemonList(
     onPokemonClick: (Int) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
 
     // Detect when we've scrolled near the bottom to trigger pagination
     val shouldLoadMore by remember {
         derivedStateOf {
-            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val lastVisibleItemIndex =
+                listState.layoutInfo.visibleItemsInfo
+                    .lastOrNull()
+                    ?.index ?: 0
             val totalItemsCount = listState.layoutInfo.totalItemsCount
             lastVisibleItemIndex >= totalItemsCount - 5
         }
@@ -155,15 +160,15 @@ private fun PokemonList(
         state = listState,
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(
             items = pokemonList,
-            key = { pokemon -> pokemon.id }
+            key = { pokemon -> pokemon.id },
         ) { pokemon ->
             PokemonListItem(
                 pokemon = pokemon,
-                onClick = { onPokemonClick(pokemon.id) }
+                onClick = { onPokemonClick(pokemon.id) },
             )
         }
 
@@ -172,10 +177,10 @@ private fun PokemonList(
             item {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp),
                     )
                 }
             }
@@ -195,7 +200,7 @@ private fun PokemonList(
 private fun SearchBar(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         value = searchQuery,
@@ -205,7 +210,7 @@ private fun SearchBar(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Buscar"
+                contentDescription = "Buscar",
             )
         },
         trailingIcon = {
@@ -214,11 +219,11 @@ private fun SearchBar(
                 IconButton(onClick = { onSearchQueryChange("") }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = "Limpiar búsqueda"
+                        contentDescription = "Limpiar búsqueda",
                     )
                 }
             }
         },
-        singleLine = true
+        singleLine = true,
     )
 }

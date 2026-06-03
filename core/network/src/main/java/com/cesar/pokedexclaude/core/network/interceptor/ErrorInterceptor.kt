@@ -11,7 +11,6 @@ import java.io.IOException
  * across the application. It transforms HTTP error codes into meaningful exceptions.
  */
 class ErrorInterceptor : Interceptor {
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
@@ -24,21 +23,27 @@ class ErrorInterceptor : Interceptor {
                     // Success - return response as is
                     response
                 }
+
                 401 -> {
                     throw IOException("Unauthorized: Authentication required")
                 }
+
                 403 -> {
                     throw IOException("Forbidden: Access denied")
                 }
+
                 404 -> {
                     throw IOException("Not Found: Resource does not exist")
                 }
+
                 500 -> {
                     throw IOException("Server Error: Please try again later")
                 }
+
                 503 -> {
                     throw IOException("Service Unavailable: Server is temporarily unavailable")
                 }
+
                 else -> {
                     throw IOException("Network error: ${response.code} ${response.message}")
                 }

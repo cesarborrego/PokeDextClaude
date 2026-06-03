@@ -19,32 +19,33 @@ import retrofit2.Retrofit
  * - :domain doesn't need to know about Retrofit or API details
  * - Testable: can inject fake repositories
  */
-val dataModule = module {
+val dataModule =
+    module {
 
-    /**
-     * Provides the PokeApiService using Retrofit.
-     * Retrofit instance is provided by :core:network module.
-     */
-    single<PokeApiService> {
-        get<Retrofit>().create(PokeApiService::class.java)
-    }
+        /**
+         * Provides the PokeApiService using Retrofit.
+         * Retrofit instance is provided by :core:network module.
+         */
+        single<PokeApiService> {
+            get<Retrofit>().create(PokeApiService::class.java)
+        }
 
-    /**
-     * Provides singleton instance of PokemonRepository.
-     * Binds the interface to its implementation.
-     *
-     * The repository is a singleton because:
-     * - It manages data fetching and can potentially cache data
-     * - Multiple instances could lead to inconsistent state
-     * - Repositories don't hold UI-specific state
-     *
-     * Demonstrates Dependency Inversion Principle:
-     * - Interface defined in :domain (high-level)
-     * - Implementation provided here in :data (low-level)
-     */
-    single<PokemonRepository> {
-        PokemonRepositoryImpl(
-            apiService = get()  // Injected by Koin
-        )
+        /**
+         * Provides singleton instance of PokemonRepository.
+         * Binds the interface to its implementation.
+         *
+         * The repository is a singleton because:
+         * - It manages data fetching and can potentially cache data
+         * - Multiple instances could lead to inconsistent state
+         * - Repositories don't hold UI-specific state
+         *
+         * Demonstrates Dependency Inversion Principle:
+         * - Interface defined in :domain (high-level)
+         * - Implementation provided here in :data (low-level)
+         */
+        single<PokemonRepository> {
+            PokemonRepositoryImpl(
+                apiService = get(), // Injected by Koin
+            )
+        }
     }
-}

@@ -18,9 +18,8 @@ import kotlinx.coroutines.launch
  * @property repository Repository for accessing Pokémon data (injected via Koin)
  */
 class PokemonDetailMviViewModel(
-    private val repository: PokemonRepository
+    private val repository: PokemonRepository,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow<PokemonDetailUiState>(PokemonDetailUiState.Idle)
     val state: StateFlow<PokemonDetailUiState> = _state.asStateFlow()
 
@@ -52,17 +51,18 @@ class PokemonDetailMviViewModel(
             _state.value = PokemonDetailUiState.Loading(pokemonId)
 
             // Fetch data from repository
-            repository.getPokemonDetail(pokemonId)
+            repository
+                .getPokemonDetail(pokemonId)
                 .onSuccess { pokemonDetail ->
                     // Success state - no nullable fields, guaranteed non-null data
                     _state.value = PokemonDetailUiState.Success(pokemonDetail)
-                }
-                .onFailure { error ->
+                }.onFailure { error ->
                     // Error state - includes pokemonId for retry functionality
-                    _state.value = PokemonDetailUiState.Error(
-                        message = error.message ?: "An unknown error occurred",
-                        pokemonId = pokemonId
-                    )
+                    _state.value =
+                        PokemonDetailUiState.Error(
+                            message = error.message ?: "An unknown error occurred",
+                            pokemonId = pokemonId,
+                        )
                 }
         }
     }
@@ -78,11 +78,18 @@ class PokemonDetailMviViewModel(
      */
     private fun handleRetry() {
         when (val currentState = _state.value) {
-            is PokemonDetailUiState.Error -> handleLoadDetail(currentState.pokemonId)
-            is PokemonDetailUiState.Loading -> handleLoadDetail(currentState.pokemonId)
+            is PokemonDetailUiState.Error -> {
+                handleLoadDetail(currentState.pokemonId)
+            }
+
+            is PokemonDetailUiState.Loading -> {
+                handleLoadDetail(currentState.pokemonId)
+            }
+
             is PokemonDetailUiState.Success -> {
                 // Already have data, no need to retry
             }
+
             is PokemonDetailUiState.Idle -> {
                 // No pokemonId to retry with, do nothing
             }

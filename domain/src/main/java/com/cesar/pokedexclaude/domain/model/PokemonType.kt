@@ -4,7 +4,9 @@ package com.cesar.pokedexclaude.domain.model
  * Enum representing all 18 Pokémon types.
  * This is a pure domain model without UI concerns (colors are handled in the UI layer).
  */
-enum class PokemonType(val typeName: String) {
+enum class PokemonType(
+    val typeName: String,
+) {
     NORMAL("Normal"),
     FIRE("Fire"),
     WATER("Water"),
@@ -22,7 +24,8 @@ enum class PokemonType(val typeName: String) {
     DRAGON("Dragon"),
     DARK("Dark"),
     STEEL("Steel"),
-    FAIRY("Fairy");
+    FAIRY("Fairy"),
+    ;
 
     companion object {
         /**
@@ -32,10 +35,9 @@ enum class PokemonType(val typeName: String) {
          * @param typeName The type name as a string
          * @return The corresponding PokemonType enum, or NORMAL if not found
          */
-        fun fromString(typeName: String): PokemonType {
-            return entries.find {
+        fun fromString(typeName: String): PokemonType =
+            entries.find {
                 it.typeName.equals(typeName, ignoreCase = true)
             } ?: NORMAL
-        }
     }
 }

@@ -11,7 +11,6 @@ import com.cesar.pokedexclaude.domain.model.PokemonDetail
  * The implementation resides in the data layer.
  */
 interface PokemonRepository {
-
     /**
      * Fetches a paginated list of Pokémon with full details.
      * Makes parallel requests to fetch details for each Pokémon in the list.
@@ -20,7 +19,10 @@ interface PokemonRepository {
      * @param offset Starting position in the list
      * @return Result containing list of Pokémon or an error
      */
-    suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>>
+    suspend fun getPokemonList(
+        limit: Int,
+        offset: Int,
+    ): Result<List<Pokemon>>
 
     /**
      * Fetches detailed information about a specific Pokémon.

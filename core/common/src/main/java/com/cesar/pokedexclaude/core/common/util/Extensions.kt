@@ -14,9 +14,7 @@ package com.cesar.pokedexclaude.core.common.util
  * val result = nullableString.orEmpty() // Returns ""
  * ```
  */
-fun String?.orEmptyIfNull(): String {
-    return this ?: ""
-}
+fun String?.orEmptyIfNull(): String = this ?: ""
 
 /**
  * Extension function to capitalize the first character of a string.
@@ -26,15 +24,12 @@ fun String?.orEmptyIfNull(): String {
  * "pikachu".capitalizeFirstChar() // Returns "Pikachu"
  * ```
  */
-fun String.capitalizeFirstChar(): String {
-    return this.replaceFirstChar {
+fun String.capitalizeFirstChar(): String =
+    this.replaceFirstChar {
         if (it.isLowerCase()) it.titlecase() else it.toString()
     }
-}
 
 /**
  * Extension function to check if a string is a valid URL.
  */
-fun String.isValidUrl(): Boolean {
-    return this.startsWith("http://") || this.startsWith("https://")
-}
+fun String.isValidUrl(): Boolean = this.startsWith("http://") || this.startsWith("https://")

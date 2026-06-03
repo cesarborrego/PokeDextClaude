@@ -17,7 +17,7 @@ data class PokemonListResponse(
     @SerialName("previous")
     val previous: String?,
     @SerialName("results")
-    val results: List<PokemonListItemDto>
+    val results: List<PokemonListItemDto>,
 )
 
 /**
@@ -28,12 +28,17 @@ data class PokemonListItemDto(
     @SerialName("name")
     val name: String,
     @SerialName("url")
-    val url: String
+    val url: String,
 ) {
     /**
      * Extracts the Pokémon ID from the URL
      * Example URL: "https://pokeapi.co/api/v2/pokemon/1/"
      */
     val id: Int
-        get() = url.trimEnd('/').split('/').last().toInt()
+        get() =
+            url
+                .trimEnd('/')
+                .split('/')
+                .last()
+                .toInt()
 }

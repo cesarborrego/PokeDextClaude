@@ -16,7 +16,6 @@ import retrofit2.http.Query
  * - Single Responsibility: Only defines API contract, no implementation
  */
 interface PokeApiService {
-
     /**
      * Fetches a paginated list of Pokémon.
      *
@@ -27,7 +26,7 @@ interface PokeApiService {
     @GET("pokemon")
     suspend fun getPokemonList(
         @Query("limit") limit: Int = 20,
-        @Query("offset") offset: Int = 0
+        @Query("offset") offset: Int = 0,
     ): PokemonListResponse
 
     /**
@@ -38,7 +37,7 @@ interface PokeApiService {
      */
     @GET("pokemon/{id}")
     suspend fun getPokemonDetail(
-        @Path("id") id: Int
+        @Path("id") id: Int,
     ): PokemonDto
 
     /**
@@ -50,6 +49,6 @@ interface PokeApiService {
      */
     @GET("pokemon-species/{id}")
     suspend fun getPokemonSpecies(
-        @Path("id") id: Int
+        @Path("id") id: Int,
     ): PokemonSpeciesDto
 }

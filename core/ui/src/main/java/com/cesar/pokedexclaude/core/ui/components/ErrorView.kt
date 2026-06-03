@@ -29,20 +29,21 @@ import androidx.compose.ui.unit.dp
 fun ErrorView(
     message: String,
     onRetry: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.error,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         if (onRetry != null) {
@@ -59,7 +60,7 @@ fun ErrorView(
 private fun ErrorViewPreview() {
     ErrorView(
         message = "Something went wrong. Please try again.",
-        onRetry = {}
+        onRetry = {},
     )
 }
 
@@ -67,6 +68,6 @@ private fun ErrorViewPreview() {
 @Composable
 private fun ErrorViewWithoutRetryPreview() {
     ErrorView(
-        message = "Something went wrong."
+        message = "Something went wrong.",
     )
 }

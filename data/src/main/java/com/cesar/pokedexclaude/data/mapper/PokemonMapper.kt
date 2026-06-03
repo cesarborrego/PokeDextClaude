@@ -20,23 +20,22 @@ import com.cesar.pokedexclaude.domain.model.PokemonType
  * - Domain models remain independent of API structure
  */
 object PokemonMapper {
-
     /**
      * Maps a PokemonDto to a Pokémon domain model for list display.
      *
      * @param dto The DTO from the API
      * @return Pokémon domain model with basic information
      */
-    fun mapToPokemon(dto: PokemonDto): Pokemon {
-        return Pokemon(
+    fun mapToPokemon(dto: PokemonDto): Pokemon =
+        Pokemon(
             id = dto.id,
             name = dto.name.capitalizeWords(),
             imageUrl = dto.sprites.frontDefault ?: "",
-            types = dto.types
-                .sortedBy { it.slot }
-                .map { PokemonType.fromString(it.type.name) }
+            types =
+                dto.types
+                    .sortedBy { it.slot }
+                    .map { PokemonType.fromString(it.type.name) },
         )
-    }
 
     /**
      * Maps PokemonDto and PokemonSpeciesDto to a PokemonDetail domain model.
@@ -48,39 +47,44 @@ object PokemonMapper {
      */
     fun mapToPokemonDetail(
         pokemonDto: PokemonDto,
-        speciesDto: PokemonSpeciesDto
-    ): PokemonDetail {
-        return PokemonDetail(
+        speciesDto: PokemonSpeciesDto,
+    ): PokemonDetail =
+        PokemonDetail(
             id = pokemonDto.id,
             name = pokemonDto.name.capitalizeWords(),
             // Prefer high-quality official artwork, fallback to front sprite
-            imageUrl = pokemonDto.sprites.other?.officialArtwork?.frontDefault
-                ?: pokemonDto.sprites.frontDefault
-                ?: "",
-            types = pokemonDto.types
-                .sortedBy { it.slot }
-                .map { PokemonType.fromString(it.type.name) },
+            imageUrl =
+                pokemonDto.sprites.other
+                    ?.officialArtwork
+                    ?.frontDefault
+                    ?: pokemonDto.sprites.frontDefault
+                    ?: "",
+            types =
+                pokemonDto.types
+                    .sortedBy { it.slot }
+                    .map { PokemonType.fromString(it.type.name) },
             height = pokemonDto.height,
             weight = pokemonDto.weight,
-            stats = pokemonDto.stats.map { statDto ->
-                PokemonStat(
-                    name = formatStatName(statDto.stat.name),
-                    baseStat = statDto.baseStat
-                )
-            },
-            abilities = pokemonDto.abilities.map { abilitySlot ->
-                abilitySlot.ability.name.capitalizeWords()
-            },
-            description = extractEnglishDescription(speciesDto)
+            stats =
+                pokemonDto.stats.map { statDto ->
+                    PokemonStat(
+                        name = formatStatName(statDto.stat.name),
+                        baseStat = statDto.baseStat,
+                    )
+                },
+            abilities =
+                pokemonDto.abilities.map { abilitySlot ->
+                    abilitySlot.ability.name.capitalizeWords()
+                },
+            description = extractEnglishDescription(speciesDto),
         )
-    }
 
     /**
      * Formats stat names from API format to display format.
      * Example: "special-attack" -> "Sp. Atk"
      */
-    private fun formatStatName(statName: String): String {
-        return when (statName) {
+    private fun formatStatName(statName: String): String =
+        when (statName) {
             "hp" -> "HP"
             "attack" -> "Attack"
             "defense" -> "Defense"
@@ -89,7 +93,6 @@ object PokemonMapper {
             "speed" -> "Speed"
             else -> statName.capitalizeWords()
         }
-    }
 
     /**
      * Extracts the English description from species flavor text entries.
@@ -99,10 +102,12 @@ object PokemonMapper {
      * @return Cleaned English description, or empty string if not found
      */
     private fun extractEnglishDescription(speciesDto: PokemonSpeciesDto): String {
-        val englishEntry = speciesDto.flavorTextEntries
-            .firstOrNull { it.language.name == "en" }
+        val englishEntry =
+            speciesDto.flavorTextEntries
+                .firstOrNull { it.language.name == "en" }
 
-        return englishEntry?.flavorText
+        return englishEntry
+            ?.flavorText
             ?.replace("\n", " ")
             ?.replace("\u000c", " ")
             ?.replace("  ", " ")
@@ -114,10 +119,9 @@ object PokemonMapper {
      * Capitalizes each word in a string (e.g., "pikachu" -> "Pikachu").
      * Handles hyphenated names (e.g., "mr-mime" -> "Mr-Mime").
      */
-    private fun String.capitalizeWords(): String {
-        return split("-")
+    private fun String.capitalizeWords(): String =
+        split("-")
             .joinToString("-") { word ->
                 word.replaceFirstChar { it.uppercase() }
             }
-    }
 }

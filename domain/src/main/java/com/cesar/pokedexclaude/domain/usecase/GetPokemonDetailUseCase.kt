@@ -15,7 +15,7 @@ import com.cesar.pokedexclaude.domain.repository.PokemonRepository
  * @param repository The repository providing data access
  */
 class GetPokemonDetailUseCase(
-    private val repository: PokemonRepository
+    private val repository: PokemonRepository,
 ) {
     /**
      * Executes the use case to fetch detailed information about a Pokémon.

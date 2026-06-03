@@ -19,9 +19,8 @@ import kotlinx.coroutines.coroutineScope
  * @property apiService The Retrofit API service for making network requests
  */
 class PokemonRepositoryImpl(
-    private val apiService: PokeApiService
+    private val apiService: PokeApiService,
 ) : PokemonRepository {
-
     /**
      * Fetches a paginated list of Pokémon with full details.
      * First fetches the list, then makes parallel requests for each Pokémon's details.
@@ -30,54 +29,58 @@ class PokemonRepositoryImpl(
      * - Single Responsibility: Only handles data fetching
      * - Error handling: Graceful degradation if individual Pokemon fail
      */
-    override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> {
-        return try {
+    override suspend fun getPokemonList(
+        limit: Int,
+        offset: Int,
+    ): Result<List<Pokemon>> =
+        try {
             // Fetch the list of Pokémon (names and URLs)
             val listResponse = apiService.getPokemonList(limit, offset)
 
             // Fetch details for each Pokémon in parallel using coroutineScope
-            val pokemonList = coroutineScope {
-                listResponse.results.map { listItem ->
-                    async {
-                        try {
-                            val detailDto = apiService.getPokemonDetail(listItem.id)
-                            PokemonMapper.mapToPokemon(detailDto)
-                        } catch (e: Exception) {
-                            // If a single Pokémon fails, log and skip it
-                            null
-                        }
-                    }
-                }.mapNotNull { it.await() }
-            }
+            val pokemonList =
+                coroutineScope {
+                    listResponse.results
+                        .map { listItem ->
+                            async {
+                                try {
+                                    val detailDto = apiService.getPokemonDetail(listItem.id)
+                                    PokemonMapper.mapToPokemon(detailDto)
+                                } catch (e: Exception) {
+                                    // If a single Pokémon fails, log and skip it
+                                    null
+                                }
+                            }
+                        }.mapNotNull { it.await() }
+                }
 
             Result.success(pokemonList)
         } catch (e: Exception) {
             Result.failure(
-                Exception("Failed to fetch Pokémon list: ${e.message}", e)
+                Exception("Failed to fetch Pokémon list: ${e.message}", e),
             )
         }
-    }
 
     /**
      * Fetches detailed information about a specific Pokémon.
      * Makes parallel requests to both Pokémon and Species endpoints.
      */
-    override suspend fun getPokemonDetail(id: Int): Result<PokemonDetail> {
-        return try {
+    override suspend fun getPokemonDetail(id: Int): Result<PokemonDetail> =
+        try {
             // Fetch Pokémon detail and species info in parallel
-            val (pokemonDto, speciesDto) = coroutineScope {
-                val pokemonDeferred = async { apiService.getPokemonDetail(id) }
-                val speciesDeferred = async { apiService.getPokemonSpecies(id) }
+            val (pokemonDto, speciesDto) =
+                coroutineScope {
+                    val pokemonDeferred = async { apiService.getPokemonDetail(id) }
+                    val speciesDeferred = async { apiService.getPokemonSpecies(id) }
 
-                Pair(pokemonDeferred.await(), speciesDeferred.await())
-            }
+                    Pair(pokemonDeferred.await(), speciesDeferred.await())
+                }
 
             val pokemonDetail = PokemonMapper.mapToPokemonDetail(pokemonDto, speciesDto)
             Result.success(pokemonDetail)
         } catch (e: Exception) {
             Result.failure(
-                Exception("Failed to fetch Pokémon detail: ${e.message}", e)
+                Exception("Failed to fetch Pokémon detail: ${e.message}", e),
             )
         }
-    }
 }

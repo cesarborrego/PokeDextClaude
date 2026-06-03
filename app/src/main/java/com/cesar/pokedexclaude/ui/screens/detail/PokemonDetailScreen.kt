@@ -32,13 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import org.koin.androidx.compose.koinViewModel
 import com.cesar.pokedexclaude.domain.model.PokemonDetail
 import com.cesar.pokedexclaude.ui.common.ErrorView
 import com.cesar.pokedexclaude.ui.common.LoadingView
 import com.cesar.pokedexclaude.ui.screens.detail.components.PokemonAbilityChip
 import com.cesar.pokedexclaude.ui.screens.detail.components.PokemonStatBar
 import com.cesar.pokedexclaude.ui.screens.list.components.PokemonTypeChip
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Pokémon detail screen showing comprehensive information about a single Pokémon.
@@ -56,7 +56,7 @@ fun PokemonDetailScreen(
     pokemonId: Int,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PokemonDetailMviViewModel = koinViewModel()
+    viewModel: PokemonDetailMviViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -71,25 +71,26 @@ fun PokemonDetailScreen(
             TopAppBar(
                 title = {
                     // Type-safe title extraction - no !! operator needed
-                    val title = when (val currentState = state) {
-                        is PokemonDetailUiState.Success -> currentState.pokemonDetail.name
-                        else -> "Pokemon Detail"
-                    }
+                    val title =
+                        when (val currentState = state) {
+                            is PokemonDetailUiState.Success -> currentState.pokemonDetail.name
+                            else -> "Pokemon Detail"
+                        }
                     Text(
                         text = title,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         // Exhaustive when expression with sealed class - compiler verifies all cases are handled
         when (val currentState = state) {
@@ -108,7 +109,7 @@ fun PokemonDetailScreen(
                     onRetry = {
                         viewModel.processIntent(PokemonDetailIntent.Retry)
                     },
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
                 )
             }
 
@@ -116,7 +117,7 @@ fun PokemonDetailScreen(
                 // No !! operator - data guaranteed non-null in Success state
                 PokemonDetailContent(
                     pokemonDetail = currentState.pokemonDetail,
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
                 )
             }
         }
@@ -130,23 +131,23 @@ fun PokemonDetailScreen(
 @Composable
 private fun PokemonDetailContent(
     pokemonDetail: PokemonDetail,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Pokémon Image
         item {
             androidx.compose.foundation.layout.Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 AsyncImage(
                     model = pokemonDetail.imageUrl,
                     contentDescription = pokemonDetail.name,
-                    modifier = Modifier.size(250.dp)
+                    modifier = Modifier.size(250.dp),
                 )
             }
         }
@@ -155,13 +156,13 @@ private fun PokemonDetailContent(
         item {
             androidx.compose.foundation.layout.Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = "#${pokemonDetail.id.toString().padStart(3, '0')}",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -171,7 +172,7 @@ private fun PokemonDetailContent(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 pokemonDetail.types.forEach { type ->
                     PokemonTypeChip(type = type)
@@ -184,13 +185,13 @@ private fun PokemonDetailContent(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "About",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -198,7 +199,7 @@ private fun PokemonDetailContent(
                     Text(
                         text = pokemonDetail.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -208,26 +209,27 @@ private fun PokemonDetailContent(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     // Height
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "Height",
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = String.format("%.1f m", pokemonDetail.height / 10.0),
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
 
@@ -236,13 +238,13 @@ private fun PokemonDetailContent(
                         Text(
                             text = "Weight",
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = String.format("%.1f kg", pokemonDetail.weight / 10.0),
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -253,13 +255,13 @@ private fun PokemonDetailContent(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "Base Stats",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -276,20 +278,20 @@ private fun PokemonDetailContent(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "Abilities",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         pokemonDetail.abilities.forEach { ability ->
                             PokemonAbilityChip(abilityName = ability)

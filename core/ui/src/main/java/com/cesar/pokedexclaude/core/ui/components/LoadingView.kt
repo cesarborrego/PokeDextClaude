@@ -16,12 +16,10 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
  * Typically used when fetching data or performing async operations.
  */
 @Composable
-fun LoadingView(
-    modifier: Modifier = Modifier
-) {
+fun LoadingView(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()
     }

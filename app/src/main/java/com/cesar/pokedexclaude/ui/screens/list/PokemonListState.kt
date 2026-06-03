@@ -17,7 +17,6 @@ import com.cesar.pokedexclaude.domain.model.Pokemon
  * - Make Invalid States Unrepresentable: Cannot have contradictory state combinations
  */
 sealed interface PokemonListUiState {
-
     /**
      * Initial loading state when first opening the screen.
      */
@@ -38,7 +37,7 @@ sealed interface PokemonListUiState {
         val allPokemonList: List<Pokemon>,
         val searchQuery: String = "",
         val isLoadingMore: Boolean = false,
-        val currentOffset: Int = 0
+        val currentOffset: Int = 0,
     ) : PokemonListUiState {
         companion object {
             const val PAGE_SIZE = 20
@@ -49,5 +48,7 @@ sealed interface PokemonListUiState {
      * Error state when initial loading fails.
      * @property message The error message to display
      */
-    data class Error(val message: String) : PokemonListUiState
+    data class Error(
+        val message: String,
+    ) : PokemonListUiState
 }

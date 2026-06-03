@@ -14,7 +14,7 @@ data class PokemonSpeciesDto(
     @SerialName("name")
     val name: String,
     @SerialName("flavor_text_entries")
-    val flavorTextEntries: List<FlavorTextEntryDto>
+    val flavorTextEntries: List<FlavorTextEntryDto>,
 )
 
 /**
@@ -25,7 +25,7 @@ data class FlavorTextEntryDto(
     @SerialName("flavor_text")
     val flavorText: String,
     @SerialName("language")
-    val language: LanguageDto
+    val language: LanguageDto,
 )
 
 /**
@@ -34,5 +34,5 @@ data class FlavorTextEntryDto(
 @Serializable
 data class LanguageDto(
     @SerialName("name")
-    val name: String
+    val name: String,
 )
