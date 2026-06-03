@@ -1,18 +1,21 @@
 package com.cesar.pokedexclaude.di
 
-import com.cesar.pokedexclaude.ui.screens.detail.PokemonDetailViewModel
-import com.cesar.pokedexclaude.ui.screens.list.PokemonListViewModel
+import com.cesar.pokedexclaude.ui.screens.detail.PokemonDetailMviViewModel
+import com.cesar.pokedexclaude.ui.screens.list.PokemonListMviViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 /**
- * Koin module providing ViewModel dependencies.
+ * Koin module providing MVI ViewModel dependencies.
  * Uses viewModel factory for proper Android ViewModel lifecycle management.
+ *
+ * Note: This module now provides MVI (Model-View-Intent) ViewModels
+ * which implement unidirectional data flow pattern.
  */
 val viewModelModule = module {
 
     /**
-     * Provides factory instance of PokemonListViewModel.
+     * Provides factory instance of PokemonListMviViewModel.
      * Injects PokemonRepository from repositoryModule.
      *
      * Factory scope is used because:
@@ -21,17 +24,17 @@ val viewModelModule = module {
      * - Each screen/navigation destination needs its own ViewModel instance
      */
     viewModel {
-        PokemonListViewModel(
+        PokemonListMviViewModel(
             repository = get() // Injects PokemonRepository from Koin
         )
     }
 
     /**
-     * Provides factory instance of PokemonDetailViewModel.
+     * Provides factory instance of PokemonDetailMviViewModel.
      * Injects PokemonRepository from repositoryModule.
      */
     viewModel {
-        PokemonDetailViewModel(
+        PokemonDetailMviViewModel(
             repository = get() // Injects PokemonRepository from Koin
         )
     }

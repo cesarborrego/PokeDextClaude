@@ -41,20 +41,20 @@ import com.cesar.pokedexclaude.ui.screens.list.components.PokemonListItem
 /**
  * Main Pokémon list screen displaying a scrollable list of Pokémon.
  * Supports pagination - automatically loads more Pokémon when scrolling to the bottom.
+ * Uses MVI (Model-View-Intent) architecture pattern with sealed classes for type-safe state management.
  *
  * @param onPokemonClick Callback invoked when a Pokémon is clicked, receives Pokémon ID
  * @param modifier Modifier to be applied to the screen
- * @param viewModel The ViewModel managing the screen state
+ * @param viewModel The MVI ViewModel managing the screen state
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonListScreen(
     onPokemonClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PokemonListViewModel = koinViewModel()
+    viewModel: PokemonListMviViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
+    val state by viewModel.state.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
@@ -71,39 +71,48 @@ fun PokemonListScreen(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-        ) {
-            // Search bar
-            SearchBar(
-                searchQuery = searchQuery,
-                onSearchQueryChange = viewModel::onSearchQueryChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
+        // Exhaustive when expression with sealed class - compiler verifies all cases are handled
+        when (val currentState = state) {
+            is PokemonListUiState.Loading -> {
+                LoadingView()
+            }
 
-            // Content based on state
-            when (val state = uiState) {
-                is PokemonListUiState.Loading -> {
-                    LoadingView()
-                }
+            is PokemonListUiState.Error -> {
+                // No !! operator - data guaranteed non-null in Error state
+                ErrorView(
+                    message = currentState.message,
+                    onRetry = {
+                        viewModel.processIntent(PokemonListIntent.Retry)
+                    }
+                )
+            }
 
-                is PokemonListUiState.Success -> {
-                    PokemonList(
-                        pokemonList = state.pokemonList,
-                        onPokemonClick = onPokemonClick,
-                        onLoadMore = viewModel::loadMore,
-                        modifier = Modifier.weight(1f)
+            is PokemonListUiState.Success -> {
+                // No !! operator - all data guaranteed non-null in Success state
+                Column(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                ) {
+                    // Search bar - state guaranteed to be Success
+                    SearchBar(
+                        searchQuery = currentState.searchQuery,
+                        onSearchQueryChange = { query ->
+                            viewModel.processIntent(PokemonListIntent.SearchQueryChanged(query))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
-                }
 
-                is PokemonListUiState.Error -> {
-                    ErrorView(
-                        message = state.message,
-                        onRetry = viewModel::loadPokemon
+                    PokemonList(
+                        pokemonList = currentState.pokemonList,
+                        onPokemonClick = onPokemonClick,
+                        onLoadMore = {
+                            viewModel.processIntent(PokemonListIntent.LoadMore)
+                        },
+                        isLoadingMore = currentState.isLoadingMore,
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -113,12 +122,15 @@ fun PokemonListScreen(
 
 /**
  * Displays the list of Pokémon with pagination support.
+ * Shows a loading indicator at the bottom when loading more items.
+ * All data is guaranteed to be non-null when this composable is called.
  */
 @Composable
 private fun PokemonList(
     pokemonList: List<com.cesar.pokedexclaude.domain.model.Pokemon>,
     onPokemonClick: (Int) -> Unit,
     onLoadMore: () -> Unit,
+    isLoadingMore: Boolean,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -155,15 +167,17 @@ private fun PokemonList(
             )
         }
 
-        // Loading indicator for pagination
-        item {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.padding(16.dp)
-                )
+        // Loading indicator for pagination - only show when actually loading more
+        if (isLoadingMore) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
     }

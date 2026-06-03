@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -44,11 +43,12 @@ import com.cesar.pokedexclaude.ui.screens.list.components.PokemonTypeChip
 /**
  * Pokémon detail screen showing comprehensive information about a single Pokémon.
  * Displays image, description, stats, abilities, types, height, and weight.
+ * Uses MVI (Model-View-Intent) architecture pattern with sealed classes for type-safe state management.
  *
  * @param pokemonId The ID of the Pokémon to display
  * @param onNavigateBack Callback invoked when the back button is clicked
  * @param modifier Modifier to be applied to the screen
- * @param viewModel The ViewModel managing the screen state
+ * @param viewModel The MVI ViewModel managing the screen state
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,13 +56,13 @@ fun PokemonDetailScreen(
     pokemonId: Int,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PokemonDetailViewModel = koinViewModel()
+    viewModel: PokemonDetailMviViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     // Load Pokémon details when screen is first composed
     LaunchedEffect(pokemonId) {
-        viewModel.loadPokemonDetail(pokemonId)
+        viewModel.processIntent(PokemonDetailIntent.LoadDetail(pokemonId))
     }
 
     Scaffold(
@@ -70,17 +70,15 @@ fun PokemonDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    when (val state = uiState) {
-                        is PokemonDetailUiState.Success -> {
-                            Text(
-                                text = state.pokemonDetail.name,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        else -> {
-                            Text(text = "Pokemon Detail")
-                        }
+                    // Type-safe title extraction - no !! operator needed
+                    val title = when (val currentState = state) {
+                        is PokemonDetailUiState.Success -> currentState.pokemonDetail.name
+                        else -> "Pokemon Detail"
                     }
+                    Text(
+                        text = title,
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
@@ -93,22 +91,31 @@ fun PokemonDetailScreen(
             )
         }
     ) { paddingValues ->
-        when (val state = uiState) {
+        // Exhaustive when expression with sealed class - compiler verifies all cases are handled
+        when (val currentState = state) {
+            is PokemonDetailUiState.Idle -> {
+                // Show nothing or a placeholder while waiting for intent
+            }
+
             is PokemonDetailUiState.Loading -> {
                 LoadingView(modifier = Modifier.padding(paddingValues))
             }
 
-            is PokemonDetailUiState.Success -> {
-                PokemonDetailContent(
-                    pokemonDetail = state.pokemonDetail,
+            is PokemonDetailUiState.Error -> {
+                // No !! operator - data guaranteed non-null in Error state
+                ErrorView(
+                    message = currentState.message,
+                    onRetry = {
+                        viewModel.processIntent(PokemonDetailIntent.Retry)
+                    },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
 
-            is PokemonDetailUiState.Error -> {
-                ErrorView(
-                    message = state.message,
-                    onRetry = { viewModel.loadPokemonDetail(pokemonId) },
+            is PokemonDetailUiState.Success -> {
+                // No !! operator - data guaranteed non-null in Success state
+                PokemonDetailContent(
+                    pokemonDetail = currentState.pokemonDetail,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -118,6 +125,7 @@ fun PokemonDetailScreen(
 
 /**
  * Displays the detailed Pokémon information in a scrollable column.
+ * All data is guaranteed to be non-null when this composable is called.
  */
 @Composable
 private fun PokemonDetailContent(
