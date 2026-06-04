@@ -11,21 +11,22 @@ import org.koin.dsl.module
  * Use cases are provided as factories since they're typically short-lived
  * and created on-demand by ViewModels.
  */
-val domainModule = module {
+val domainModule =
+    module {
 
-    /**
-     * Provides GetPokemonListUseCase.
-     * Factory scope ensures a new instance is created each time it's injected.
-     */
-    factory {
-        GetPokemonListUseCase(repository = get())
-    }
+        /**
+         * Provides GetPokemonListUseCase.
+         * Factory scope ensures a new instance is created each time it's injected.
+         */
+        factory {
+            GetPokemonListUseCase(repository = get())
+        }
 
-    /**
-     * Provides GetPokemonDetailUseCase.
-     * Factory scope ensures a new instance is created each time it's injected.
-     */
-    factory {
-        GetPokemonDetailUseCase(repository = get())
+        /**
+         * Provides GetPokemonDetailUseCase.
+         * Factory scope ensures a new instance is created each time it's injected.
+         */
+        factory {
+            GetPokemonDetailUseCase(repository = get())
+        }
     }
-}
