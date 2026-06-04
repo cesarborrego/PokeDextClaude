@@ -7,9 +7,10 @@ plugins {
 android {
     namespace = "com.cesar.pokedexclaude"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version =
+            release(36) {
+                minorApiLevel = 1
+            }
     }
 
     defaultConfig {
@@ -27,7 +28,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -37,6 +38,59 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    lint {
+        // Strictness
+        abortOnError = true
+        checkAllWarnings = true
+        warningsAsErrors = false
+
+        // Performance
+        checkDependencies = true
+        checkGeneratedSources = false
+
+        // Reports
+        htmlReport = true
+        xmlReport = true
+        sarifReport = true
+
+        // Baseline for incremental adoption
+        baseline = file("lint-baseline.xml")
+
+        // Critical rules for this project
+        enable +=
+            setOf(
+                "Interoperability",
+                "Security",
+                "Performance",
+                "Correctness",
+                "UnusedResources",
+                "Compose",
+            )
+
+        // Disable noisy rules
+        disable +=
+            setOf(
+                "IconMissingDensityFolder",
+                "GoogleAppIndexingWarning",
+                "ObsoleteLintCustomCheck",
+            )
+
+        // Custom severities
+        error +=
+            setOf(
+                "StopShip",
+                "HardcodedText",
+                "MissingPermission",
+                "InvalidPackage",
+            )
+
+        warning +=
+            setOf(
+                "UnusedResources",
+                "IconDensities",
+            )
     }
 }
 

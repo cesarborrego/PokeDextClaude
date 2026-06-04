@@ -1,9 +1,7 @@
 package com.cesar.pokedexclaude.core.common.util
 
-/**
- * Common Kotlin extensions used across the application.
- * These extensions provide utility functions that can be reused in any layer.
- */
+// Common Kotlin extensions used across the application.
+// These extensions provide utility functions that can be reused in any layer.
 
 /**
  * Extension function to convert a nullable String to an empty string if null.

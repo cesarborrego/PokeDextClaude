@@ -92,3 +92,12 @@ lint/tmp/
 
 # Kotlin
 .kotlin/
+
+# Quality Tools
+# Detekt baselines (optional: commit if you want to track baselines)
+config/detekt/baseline.xml
+**/detekt-baseline.xml
+# Lint baselines (optional: commit if you want to track baselines)
+**/lint-baseline.xml
+# ktlint reports
+**/.ktlint
