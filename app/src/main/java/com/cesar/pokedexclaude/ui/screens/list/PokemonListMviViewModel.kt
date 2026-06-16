@@ -2,6 +2,8 @@ package com.cesar.pokedexclaude.ui.screens.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cesar.pokedexclaude.core.common.util.onError
+import com.cesar.pokedexclaude.core.common.util.onSuccess
 import com.cesar.pokedexclaude.domain.model.Pokemon
 import com.cesar.pokedexclaude.domain.repository.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +74,7 @@ class PokemonListMviViewModel(
                         currentOffset = PokemonListUiState.Success.PAGE_SIZE
                     )
                 }
-                .onFailure { error ->
+                .onError { error ->
                     // Error state with message
                     _state.value = PokemonListUiState.Error(
                         message = error.message ?: "An unknown error occurred"
@@ -115,7 +117,7 @@ class PokemonListMviViewModel(
                         currentOffset = currentState.currentOffset + PokemonListUiState.Success.PAGE_SIZE
                     )
                 }
-                .onFailure { error ->
+                .onError { error ->
                     // Keep existing data, just stop loading indicator
                     _state.value = currentState.copy(isLoadingMore = false)
                     // In production, you might want to show a snackbar or toast

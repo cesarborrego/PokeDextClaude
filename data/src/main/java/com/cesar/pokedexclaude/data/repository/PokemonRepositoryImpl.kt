@@ -1,5 +1,6 @@
 package com.cesar.pokedexclaude.data.repository
 
+import com.cesar.pokedexclaude.core.common.util.Result
 import com.cesar.pokedexclaude.data.mapper.PokemonMapper
 import com.cesar.pokedexclaude.data.remote.api.PokeApiService
 import com.cesar.pokedexclaude.domain.model.Pokemon
@@ -54,10 +55,11 @@ class PokemonRepositoryImpl(
                         }.mapNotNull { it.await() }
                 }
 
-            Result.success(pokemonList)
+            Result.Success(pokemonList)
         } catch (e: Exception) {
-            Result.failure(
-                Exception("Failed to fetch Pokémon list: ${e.message}", e),
+            Result.Error(
+                exception = e,
+                message = "Failed to fetch Pokémon list: ${e.message}",
             )
         }
 
@@ -77,10 +79,11 @@ class PokemonRepositoryImpl(
                 }
 
             val pokemonDetail = PokemonMapper.mapToPokemonDetail(pokemonDto, speciesDto)
-            Result.success(pokemonDetail)
+            Result.Success(pokemonDetail)
         } catch (e: Exception) {
-            Result.failure(
-                Exception("Failed to fetch Pokémon detail: ${e.message}", e),
+            Result.Error(
+                exception = e,
+                message = "Failed to fetch Pokémon detail: ${e.message}",
             )
         }
 }

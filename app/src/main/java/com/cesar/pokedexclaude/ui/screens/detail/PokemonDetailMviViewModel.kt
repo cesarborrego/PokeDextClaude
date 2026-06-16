@@ -2,6 +2,8 @@ package com.cesar.pokedexclaude.ui.screens.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cesar.pokedexclaude.core.common.util.onError
+import com.cesar.pokedexclaude.core.common.util.onSuccess
 import com.cesar.pokedexclaude.domain.repository.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,7 +58,7 @@ class PokemonDetailMviViewModel(
                 .onSuccess { pokemonDetail ->
                     // Success state - no nullable fields, guaranteed non-null data
                     _state.value = PokemonDetailUiState.Success(pokemonDetail)
-                }.onFailure { error ->
+                }.onError { error ->
                     // Error state - includes pokemonId for retry functionality
                     _state.value =
                         PokemonDetailUiState.Error(
