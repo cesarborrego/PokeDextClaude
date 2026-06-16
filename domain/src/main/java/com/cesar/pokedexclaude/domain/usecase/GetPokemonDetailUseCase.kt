@@ -1,5 +1,6 @@
 package com.cesar.pokedexclaude.domain.usecase
 
+import com.cesar.pokedexclaude.core.common.util.Result
 import com.cesar.pokedexclaude.domain.model.PokemonDetail
 import com.cesar.pokedexclaude.domain.repository.PokemonRepository
 

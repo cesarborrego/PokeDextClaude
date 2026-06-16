@@ -1,5 +1,6 @@
 package com.cesar.pokedexclaude.domain.repository
 
+import com.cesar.pokedexclaude.core.common.util.Result
 import com.cesar.pokedexclaude.domain.model.Pokemon
 import com.cesar.pokedexclaude.domain.model.PokemonDetail
 
