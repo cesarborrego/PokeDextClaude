@@ -34,8 +34,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cesar.pokedexclaude.ui.common.ErrorView
-import com.cesar.pokedexclaude.ui.common.LoadingView
 import com.cesar.pokedexclaude.ui.screens.list.components.PokemonListItem
+import com.cesar.pokedexclaude.ui.screens.list.components.PokemonListShimmer
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -74,7 +74,7 @@ fun PokemonListScreen(
         // Exhaustive when expression with sealed class - compiler verifies all cases are handled
         when (val currentState = state) {
             is PokemonListUiState.Loading -> {
-                LoadingView()
+                PokemonListShimmer(modifier = Modifier.padding(paddingValues))
             }
 
             is PokemonListUiState.Error -> {
